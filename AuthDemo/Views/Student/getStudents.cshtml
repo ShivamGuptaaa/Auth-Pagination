@@ -1,0 +1,127 @@
+﻿@model IEnumerable<AuthDemo.Model.StudentwLen>
+
+@{
+    ViewData["Title"] = "getStudents";
+}
+
+<h1>Students Record</h1>
+<div class="row">
+    <h5 class="col">Page No. :</h5><h3 class="col btn btn-outline-danger" id="pageNum">1</h3>
+</div>
+<div id="data">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.sName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.sGender)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.sStd)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.sDiv)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.sName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.sGender)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.sStd)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.sDiv)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        <li class="page-item prev">
+            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+        </li>
+        <li class="page-item"><a id="li1" class="page-link page" href="">1</a></li>
+        <li class="page-item"><a id="li2" class="page-link page" href="">2</a></li>
+        <li class="page-item"><a id="li3" class="page-link page" href="">3</a></li>
+        <li class="page-item"><a id="li4" class="page-link page" href="">4</a></li>
+        <li class="page-item"><a id="li5" class="page-link page" href="">5</a></li>
+        <li class="page-item next">
+            <a class="page-link" href="#">Next</a>
+        </li>
+    </ul>
+</nav>
+
+<script>
+    $(document).ready(() => {
+        ManagePagingBar();
+        function ManagePagingBar()
+        {
+            var pageNum = parseInt($("#pageNum").html());
+            if (pageNum <= 1)
+                $(".prev").hide();
+            else
+                $(".prev").show();
+            if (pageNum >=(@Model.First().sRecordLen/10))
+                $(".next").hide();
+            else
+                $(".next").show();
+            $(".page").hide();
+            for (var i = 0; i < 5; i++) {
+                var nxtPageNum = pageNum + i;
+                $("#li" + (i + 1)).html(nxtPageNum).show();
+                if (nxtPageNum >= (@Model.First().sRecordLen/10))
+                    break;
+            }
+        }
+
+
+        function loadRecord(page) {
+            $.ajax({
+                url: "getStudents",
+                type: "POST",
+                data: JSON.stringify(page),
+                traditional: true,
+                contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    $("#data").html(response);
+                    $("#pageNum").html(page);
+                    ManagePagingBar();
+                },
+                error: (response) => { console.log(response); alert("error hai boss"); }
+            })
+        }
+
+
+        $(".prev").click((e) => {
+            e.preventDefault();
+            var pageNum = parseInt($("#pageNum").html());
+            loadRecord(pageNum-1);
+        })
+
+        $(".next").click((e) => {
+            e.preventDefault();
+            var pageNum = parseInt($("#pageNum").html());
+            loadRecord(pageNum+1);
+        })
+
+        $(".page").click((e) => {
+            e.preventDefault();
+            var page = e.currentTarget.innerHTML;
+            console.log(page.toString());
+            loadRecord(page);
+        })
+    });
+</script>

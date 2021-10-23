@@ -1,0 +1,39 @@
+﻿@model IEnumerable<AuthDemo.Authentication.Student>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.sName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.sGender)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.sStd)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.sDiv)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.sName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.sGender)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.sStd)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.sDiv)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
