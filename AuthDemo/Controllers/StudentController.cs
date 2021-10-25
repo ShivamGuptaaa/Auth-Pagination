@@ -1,4 +1,5 @@
 ﻿using AuthDemo.Authentication;
+using AuthDemo.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
@@ -17,12 +18,18 @@ namespace AuthDemo.Controllers
         ApplicationDbContext db = new ApplicationDbContext(new DbContextOptions<ApplicationDbContext>());
         [HttpGet]
         [Route("AddStudent")]
-        public IActionResult AddStudent()
+        public string AddStudent(string name, string gender, int std,string div)
         {
-            var tmp = db.Students.ToArray().Last();
-            db.Students.Add(new Student() { sRoll = 101, sName = "Priya", sStd = 1, sDiv = "D", sGender = "Female" });
+            var lastStudent = db.Students.ToArray().LastOrDefault();
+            int nextRoll;
+            if (lastStudent == null)
+                nextRoll = 1;
+            else
+                nextRoll = lastStudent.sRoll + 1;
+            //var tmp = db.Students.ToArray().Last();
+            db.Students.Add(new Student() { sRoll = nextRoll, sName = name, sStd = std, sDiv = div, sGender = gender });
             db.SaveChanges();
-            return View();
+            return $"{name} added in the record";
         }
 
 
@@ -79,14 +86,22 @@ namespace AuthDemo.Controllers
         public IActionResult getStudents()
         {
             var students = db.Students.FromSqlRaw($"GetStudents 0").ToList();
-            int studentLen = db.Students.Count();
-            var StudentwLen = Map(students, studentLen);
-            return View(StudentwLen);
+            int studentLen;
+            List<StudentwLen> studentwLen = new List<StudentwLen>();
+            var tmp = students.Any();
+            if (!students.Any())
+            {
+                //studentLen = 0;
+                return View(studentwLen);
+            }
+                studentLen = db.Students.Count();
+                studentwLen = Map(students, studentLen);       
+                return View(studentwLen);
         }
 
         [HttpGet]
         [Route("Mapper")]
-        public IEnumerable<Model.StudentwLen> Map(IEnumerable<Student> sList,int sLen)
+        public List<Model.StudentwLen> Map(List<Student> sList,int sLen)
         {
             List<Model.StudentwLen> st = new List<Model.StudentwLen>();
             foreach (var s in sList)

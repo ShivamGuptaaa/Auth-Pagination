@@ -1,10 +1,13 @@
-﻿@model IEnumerable<AuthDemo.Model.StudentwLen>
+﻿@model List<AuthDemo.Model.StudentwLen>
 
 @{
     ViewData["Title"] = "getStudents";
 }
 
 <h1>Students Record</h1>
+
+@if (Model.Any())
+{
 <div class="row">
     <h5 class="col">Page No. :</h5><h3 class="col btn btn-outline-danger" id="pageNum">1</h3>
 </div>
@@ -13,16 +16,16 @@
         <thead>
             <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.sName)
+                    NAME
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.sGender)
+                    GENDER
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.sStd)
+                    STANDARD
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.sDiv)
+                    DIVISION
                 </th>
                 <th></th>
             </tr>
@@ -64,64 +67,73 @@
     </ul>
 </nav>
 
+}
+else
+{
+        <h4 class="d-flex noRecord justify-content-center bg-warning rounded">No Student Record Available...</h4>
+}
+
+
+    @if (Model.Any()) { 
 <script>
+
     $(document).ready(() => {
         ManagePagingBar();
-        function ManagePagingBar()
-        {
-            var pageNum = parseInt($("#pageNum").html());
-            if (pageNum <= 1)
+         function ManagePagingBar()
+         {
+             var pageNum = parseInt($("#pageNum").html());
+             if (pageNum <= 1)
                 $(".prev").hide();
             else
                 $(".prev").show();
-            if (pageNum >=(@Model.First().sRecordLen/10))
+             if (pageNum >= (@Model.First().sRecordLen / 10))
                 $(".next").hide();
             else
                 $(".next").show();
             $(".page").hide();
-            for (var i = 0; i < 5; i++) {
-                var nxtPageNum = pageNum + i;
+             for (var i = 0; i < 5; i++) {
+                 var nxtPageNum = pageNum + i;
                 $("#li" + (i + 1)).html(nxtPageNum).show();
-                if (nxtPageNum >= (@Model.First().sRecordLen/10))
-                    break;
-            }
-        }
+                 if (nxtPageNum >= (@Model.First().sRecordLen / 10))
+                     break;
+             }
+         }
 
 
-        function loadRecord(page) {
+         function loadRecord(page) {
             $.ajax({
-                url: "getStudents",
+             url: "getStudents",
                 type: "POST",
                 data: JSON.stringify(page),
                 traditional: true,
                 contentType: "application/json; charset=utf-8",
-                success: function (response) {
+                success: function(response) {
                     $("#data").html(response);
                     $("#pageNum").html(page);
-                    ManagePagingBar();
-                },
+                     ManagePagingBar();
+                 },
                 error: (response) => { console.log(response); alert("error hai boss"); }
             })
-        }
+                      }
 
 
         $(".prev").click((e) => {
-            e.preventDefault();
-            var pageNum = parseInt($("#pageNum").html());
-            loadRecord(pageNum-1);
-        })
+             e.preventDefault();
+             var pageNum = parseInt($("#pageNum").html());
+             loadRecord(pageNum - 1);
+         })
 
         $(".next").click((e) => {
-            e.preventDefault();
-            var pageNum = parseInt($("#pageNum").html());
-            loadRecord(pageNum+1);
-        })
+             e.preventDefault();
+             var pageNum = parseInt($("#pageNum").html());
+             loadRecord(pageNum + 1);
+         })
 
         $(".page").click((e) => {
-            e.preventDefault();
-            var page = e.currentTarget.innerHTML;
-            console.log(page.toString());
-            loadRecord(page);
-        })
+             e.preventDefault();
+             var page = e.currentTarget.innerHTML;
+             loadRecord(page);
+         })
     });
 </script>
+    }
